@@ -13,7 +13,7 @@ type Meta struct {
 	Code    int    `json:"code"`
 }
 
-func APIResponse(message string, status string, code int, data interface{}) Response {
+func APIResponse(message string, code int, status string, data interface{}) Response {
 	meta := Meta{
 		Message: message,
 		Code:    code,
