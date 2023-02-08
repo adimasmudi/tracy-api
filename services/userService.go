@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"errors"
 	"os"
 	"time"
 	"tracy-api/helper"
@@ -15,6 +14,7 @@ import (
 
 type UserService interface {
 	Signup(ctx context.Context, googleUser helper.GoogleUser) (models.User, string,error)
+	GetProfile(ctx context.Context, email string) (models.User, error)
 }
 
 type userService struct {
@@ -75,6 +75,17 @@ func (s *userService) Signup(ctx context.Context, googleUser helper.GoogleUser)(
 	return userFound, token, nil
 }
 
+func (s *userService) GetProfile(ctx context.Context, email string) (models.User, error){
+	var user models.User
+	user, err := s.repository.FindByEmail(ctx,email)
+
+	if err != nil{
+		return user, err
+	}
+
+	return user, nil
+}
+
 func generateToken(payload helper.GoogleUser)(string, error){
 	claim := jwt.MapClaims{}
 	claim["google_id"] = payload.Id
@@ -89,20 +100,4 @@ func generateToken(payload helper.GoogleUser)(string, error){
 	}
 
 	return signedToken, nil
-}
-
-func validateToken(encodedToken string)(*jwt.Token, error){
-	token, err := jwt.Parse(encodedToken, func(token *jwt.Token)(interface{}, error){
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok{
-			return nil, errors.New("invalid token")
-		}
-
-		return []byte(os.Getenv("SECRET_KEY")), nil
-	})
-
-	if err != nil{
-		return token, err
-	}
-
-	return token, nil
 }

@@ -7,6 +7,7 @@ import (
 	"time"
 	"tracy-api/configs"
 	"tracy-api/controllers"
+	"tracy-api/middlewares"
 	"tracy-api/repository"
 	"tracy-api/services"
 
@@ -33,5 +34,7 @@ func UserRoute(api fiber.Router, userCollection *mongo.Collection) {
 	})
 
 	authUser.Get("/callback",userHandler.Callback)
+
+	authUser.Get("/profile",middlewares.Auth,userHandler.GetProfile)
 
 }

@@ -71,3 +71,24 @@ func (h *userHandler) Callback(c *fiber.Ctx) error {
 	c.Status(http.StatusOK).JSON(responses)
 	return nil
 }
+
+
+func (h *userHandler) GetProfile(c *fiber.Ctx)error{
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+
+	currentEmailUser := c.Locals("currentUserEmail").(string)
+
+	user, err := h.userService.GetProfile(ctx,currentEmailUser)
+
+	if err != nil{
+		response := helper.APIResponse("Can't get user data", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	response := helper.APIResponse("Get user data success", http.StatusOK, "success", user)
+	c.Status(http.StatusBadRequest).JSON(response)
+	return nil
+}
