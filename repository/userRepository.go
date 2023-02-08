@@ -5,6 +5,7 @@ import (
 	"tracy-api/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -12,7 +13,7 @@ type UserRepository interface {
 	FindByEmail(ctx context.Context,email string) (models.User, error)
 	Save(ctx context.Context,user models.User) (*mongo.InsertOneResult, error)
 	IsUserExist(ctx context.Context, email string) (bool, error)
-	UpdateProfile(ctx context.Context, dataUser models.User) (models.User, error)
+	UpdateProfile(ctx context.Context, email string, dataUser primitive.M) (*mongo.UpdateResult, error)
 }
 
 type userRepository struct{
@@ -59,7 +60,12 @@ func (r *userRepository) IsUserExist(ctx context.Context, email string) (bool, e
 	return true, nil
 }
 
-func (r *userRepository) UpdateProfile(ctx context.Context, dataUser models.User) (models.User, error){
-	var user models.User
-	return user, nil
+func (r *userRepository) UpdateProfile(ctx context.Context, email string, dataUser primitive.M) (*mongo.UpdateResult, error){
+	
+	result, err := r.DB.UpdateOne(ctx, bson.M{"email" : email}, bson.M{"$set" : dataUser})
+
+	if err != nil{
+		return result, err
+	}
+	return result,nil
 }

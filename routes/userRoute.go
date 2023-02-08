@@ -36,5 +36,6 @@ func UserRoute(api fiber.Router, userCollection *mongo.Collection) {
 	authUser.Get("/callback",userHandler.Callback)
 
 	authUser.Get("/profile",middlewares.Auth,userHandler.GetProfile)
+	authUser.Put("/profile",middlewares.Auth,userHandler.UpdateProfile)
 
 }

@@ -10,6 +10,7 @@ import (
 	"tracy-api/configs"
 	formatter "tracy-api/formatters"
 	"tracy-api/helper"
+	"tracy-api/inputs"
 	"tracy-api/services"
 
 	"github.com/gofiber/fiber/v2"
@@ -66,17 +67,16 @@ func (h *userHandler) Callback(c *fiber.Ctx) error {
 		c.Status(http.StatusBadRequest).JSON(response)
 		return nil
 	}
+
 	formatter := formatter.FormatUser(user)
 	responses := helper.APIResponse("Signup User Success", http.StatusOK, "success", &fiber.Map{"user" : formatter, "token" : loginToken})
 	c.Status(http.StatusOK).JSON(responses)
 	return nil
 }
 
-
 func (h *userHandler) GetProfile(c *fiber.Ctx)error{
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
 
 	currentEmailUser := c.Locals("currentUserEmail").(string)
 
@@ -89,6 +89,35 @@ func (h *userHandler) GetProfile(c *fiber.Ctx)error{
 	}
 
 	response := helper.APIResponse("Get user data success", http.StatusOK, "success", user)
-	c.Status(http.StatusBadRequest).JSON(response)
+	c.Status(http.StatusOK).JSON(response)
 	return nil
+}
+
+func (h *userHandler) UpdateProfile(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	currentEmailUser := c.Locals("currentUserEmail").(string)
+
+	var input inputs.UpdateUserInput
+
+	//validate the request body
+	if err := c.BodyParser(&input); err != nil {
+		response := helper.APIResponse("Update Profile Failed", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	updatedUser, err := h.userService.UpdateProfile(ctx, currentEmailUser, input)
+
+	if err != nil{
+		response := helper.APIResponse("Can't update user data", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	response := helper.APIResponse("Update user data success", http.StatusOK, "success", updatedUser)
+	c.Status(http.StatusOK).JSON(response)
+	return nil
+
 }

@@ -5,16 +5,20 @@ import (
 	"os"
 	"time"
 	"tracy-api/helper"
+	"tracy-api/inputs"
 	"tracy-api/models"
 	"tracy-api/repository"
 
 	"github.com/golang-jwt/jwt/v4"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 
 type UserService interface {
 	Signup(ctx context.Context, googleUser helper.GoogleUser) (models.User, string,error)
 	GetProfile(ctx context.Context, email string) (models.User, error)
+	UpdateProfile(ctx context.Context, email string, input inputs.UpdateUserInput) (*mongo.UpdateResult, error)
 }
 
 type userService struct {
@@ -78,6 +82,18 @@ func (s *userService) Signup(ctx context.Context, googleUser helper.GoogleUser)(
 func (s *userService) GetProfile(ctx context.Context, email string) (models.User, error){
 	var user models.User
 	user, err := s.repository.FindByEmail(ctx,email)
+
+	if err != nil{
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (s *userService) UpdateProfile(ctx context.Context, email string, input inputs.UpdateUserInput) (*mongo.UpdateResult, error){
+
+	updateUser := bson.M{"username" :input.UserName, "namalengkap" : input.NamaLengkap, "dateofbirth" : input.DateOfBirth,"nohp" : input.NoHp,"alamat" : input.Alamat, "isdatavalid" : true, "updatedat" : time.Now()  }
+	user, err := s.repository.UpdateProfile(ctx,email, updateUser)
 
 	if err != nil{
 		return user, err
