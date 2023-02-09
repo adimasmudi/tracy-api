@@ -92,7 +92,15 @@ func (s *userService) GetProfile(ctx context.Context, email string) (models.User
 
 func (s *userService) UpdateProfile(ctx context.Context, email string, input inputs.UpdateUserInput) (*mongo.UpdateResult, error){
 
-	updateUser := bson.M{"username" :input.UserName, "namalengkap" : input.NamaLengkap, "dateofbirth" : input.DateOfBirth,"nohp" : input.NoHp,"alamat" : input.Alamat, "isdatavalid" : true, "updatedat" : time.Now()  }
+	updateUser := bson.M{
+		"username" :input.UserName, 
+		"namalengkap" : input.NamaLengkap, 
+		"dateofbirth" : input.DateOfBirth,
+		"nohp" : input.NoHp,
+		"alamat" : input.Alamat, 
+		"isdatavalid" : true,
+		"updatedat" : time.Now(),
+	}
 	user, err := s.repository.UpdateProfile(ctx,email, updateUser)
 
 	if err != nil{
@@ -104,7 +112,6 @@ func (s *userService) UpdateProfile(ctx context.Context, email string, input inp
 
 func generateToken(payload helper.GoogleUser)(string, error){
 	claim := jwt.MapClaims{}
-	claim["google_id"] = payload.Id
 	claim["email"] = payload.Email
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
