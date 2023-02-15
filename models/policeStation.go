@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type PoliceStation struct {
 	NamaKantor   string
@@ -9,7 +11,7 @@ type PoliceStation struct {
 	Email        string
 	Alamat       string
 	Telepon      string
-	Picture       string
+	Picture      string
 	KodeInstansi string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time

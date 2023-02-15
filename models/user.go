@@ -2,6 +2,7 @@ package models
 
 import (
 	"time"
+
 )
 
 type User struct{
@@ -14,6 +15,7 @@ type User struct{
 	Picture string
 	IsDataValid bool
 	Alamat string
+	KodeInstansi string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

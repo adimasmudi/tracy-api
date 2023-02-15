@@ -15,6 +15,7 @@ type PoliceStationRepository interface {
 	Create(ctx context.Context, policeStation primitive.M) (*mongo.InsertOneResult, error)
 	FindByEmail(ctx context.Context, email string) (models.PoliceStation,  error)
 	IsPoliceStationExist(ctx context.Context, email string, username string) (bool, error)
+	IsKodeInstansiExist(ctx context.Context, kodeInstansi string) (bool, error)
 }
 
 type policeStationRepository struct{
@@ -67,3 +68,27 @@ func (r *policeStationRepository) IsPoliceStationExist(ctx context.Context, emai
 
 	return true, errors.New("user exist")
 }
+
+func (r *policeStationRepository) IsKodeInstansiExist(ctx context.Context, kodeInstansi string) (bool, error){
+	var policeStation models.PoliceStation
+
+	err := r.DB.FindOne(ctx, bson.M{"kodeInstansi" : kodeInstansi}).Decode(&policeStation)
+
+	if err != nil{
+		return false, err
+	}
+
+	return true, errors.New("user exist")
+}
+
+// func (r *policeStationRepository) AddPolice(ctx context.Context, email string) (*mongo.UpdateResult, error){
+	
+
+// 	result, err := r.DB.InsertOne(ctx, policeStation)
+
+// 	if err != nil{
+// 		return result, err
+// 	}
+
+// 	return result, nil
+// }

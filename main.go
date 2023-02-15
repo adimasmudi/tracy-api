@@ -31,7 +31,7 @@ func main(){
 	api := app.Group("/api/v1")
 
 	// routes
-	routes.UserRoute(api, userCollection)
+	routes.UserRoute(api, userCollection, policeStationCollection)
 	routes.PoliceStationRoute(api, policeStationCollection)
 
 	app.Get("/",func(c *fiber.Ctx) error {

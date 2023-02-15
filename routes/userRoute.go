@@ -15,10 +15,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func UserRoute(api fiber.Router, userCollection *mongo.Collection) {
+func UserRoute(api fiber.Router, userCollection *mongo.Collection, policeStationCollection *mongo.Collection) {
 
 	userRepository := repository.NewUserRepository(userCollection)
-	userService := services.NewUserService(userRepository)
+	policeStationRepository := repository.NewPoliceStationRepository(policeStationCollection)
+	userService := services.NewUserService(userRepository, policeStationRepository)
 	userHandler := controllers.NewUserHandler(userService)
 
 	authUser := api.Group("/auth/users")

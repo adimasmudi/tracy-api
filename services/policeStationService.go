@@ -85,13 +85,13 @@ func (s *policeStationService) Login(ctx context.Context, input inputs.PoliceSta
 	err = bcrypt.CompareHashAndPassword([]byte(police.Password), []byte(input.Password))
 
 	if err != nil{
-		return police, "", errors.New("Wrong Password")
+		return police, "", errors.New("wrong Password")
 	}
 
 	token, err := helper.GenerateToken(police.Email)
 
 	if err != nil{
-		return police, "", errors.New("Can't generate token")
+		return police, "", errors.New("can't generate token")
 	}
 
 	return police, token, nil

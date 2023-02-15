@@ -21,10 +21,11 @@ type UserService interface {
 
 type userService struct {
 	repository repository.UserRepository
+	policeRepository repository.PoliceStationRepository
 }
 
-func NewUserService(repository repository.UserRepository) *userService {
-	return &userService{repository}
+func NewUserService(repository repository.UserRepository, policeRepository repository.PoliceStationRepository) *userService {
+	return &userService{repository, policeRepository}
 }
 
 func (s *userService) Signup(ctx context.Context, googleUser helper.GoogleUser)(models.User, string,error){
@@ -99,6 +100,18 @@ func (s *userService) UpdateProfile(ctx context.Context, email string, input inp
 		"isdatavalid" : true,
 		"updatedat" : time.Now(),
 	}
+	if input.KodeInstansi != ""{
+		isKodeInstansiExist, err := s.policeRepository.IsKodeInstansiExist(ctx, input.KodeInstansi)
+
+		if isKodeInstansiExist{
+			updateUser["kodeInstansi"] = input.KodeInstansi
+
+		}else{
+			return nil,err
+		}
+		
+	}
+
 	user, err := s.repository.UpdateProfile(ctx,email, updateUser)
 
 	if err != nil{
