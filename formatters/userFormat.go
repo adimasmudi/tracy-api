@@ -5,28 +5,28 @@ import (
 )
 
 type UserFormatter struct {
-	Username string
-	NamaLengkap string
-	Email string
-	Password string
-	NoHp string
-	DateOfBirth string
-	Picture string
-	IsDataValid bool
-	Alamat string
+	username string
+	namaLengkap string
+	email string
+	password string
+	noHp string
+	dateOfBirth string
+	picture string
+	isDataValid bool
+	alamat string
 }
 
 func FormatUser(user models.User) UserFormatter {
 	formatter := UserFormatter{
-		Username : user.Username,
-		NamaLengkap : user.NamaLengkap,
-		Email : user.Email ,
-		Password : user.Password,
-		NoHp : user.NoHp ,
-		DateOfBirth : user.DateOfBirth ,
-		Picture : user.Picture ,
-		IsDataValid : user.IsDataValid ,
-		Alamat : user.Alamat ,
+		username : user.Username,
+		namaLengkap : user.NamaLengkap,
+		email : user.Email ,
+		password : user.Password,
+		noHp : user.NoHp ,
+		dateOfBirth : user.DateOfBirth ,
+		picture : user.Picture ,
+		isDataValid : user.IsDataValid ,
+		alamat : user.Alamat ,
 	}
 
 	return formatter

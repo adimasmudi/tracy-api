@@ -29,7 +29,7 @@ func (r *userRepository) Save(ctx context.Context,user models.User) (*mongo.Inse
 	r.DB.Indexes().CreateOne(
 		ctx,
 		mongo.IndexModel{
-			Keys : bson.D{{Key: "email", Value: 1}},
+			Keys : bson.D{{Key: "email", Value: 1},{Key:"username", Value:1}},
 			Options : options.Index().SetUnique(true),
 		},
 	)

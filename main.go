@@ -26,11 +26,13 @@ func main(){
 
 	// collections
 	var userCollection *mongo.Collection = configs.GetCollection(configs.DB, "users")
+	var policeStationCollection *mongo.Collection = configs.GetCollection(configs.DB, "PoliceStations")
 
 	api := app.Group("/api/v1")
 
 	// routes
 	routes.UserRoute(api, userCollection)
+	routes.PoliceStationRoute(api, policeStationCollection)
 
 	app.Get("/",func(c *fiber.Ctx) error {
 		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
