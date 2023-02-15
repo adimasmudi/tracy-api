@@ -83,3 +83,22 @@ func (h *policeStationHandler) Login(c *fiber.Ctx) error {
 	c.Status(http.StatusOK).JSON(response)
 	return nil
 }
+
+func (h *policeStationHandler) GetProfile(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	currentEmailPoliceDashboard := c.Locals("currentUserEmail").(string)
+
+	police, err := h.policeStationService.GetProfile(ctx, currentEmailPoliceDashboard)
+
+	if err != nil{
+		response := helper.APIResponse("Can't get police station data", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	response := helper.APIResponse("get police station data success", http.StatusOK, "success", police)
+	c.Status(http.StatusOK).JSON(response)
+	return nil
+}

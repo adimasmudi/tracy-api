@@ -18,6 +18,7 @@ import (
 type PoliceStationService interface {
 	Save(ctx context.Context, input inputs.PoliceStationInput, filename string) (*mongo.InsertOneResult, error)
 	Login(ctx context.Context, input inputs.PoliceStationLoginInput) (models.PoliceStation, string, error)
+	GetProfile(ctx context.Context, email string) (models.PoliceStation, error)
 }
 
 type policeStationService struct{
@@ -94,4 +95,15 @@ func (s *policeStationService) Login(ctx context.Context, input inputs.PoliceSta
 	}
 
 	return police, token, nil
+}
+
+func (s *policeStationService) GetProfile(ctx context.Context, email string) (models.PoliceStation, error){
+	var police models.PoliceStation
+	police, err := s.repository.FindByEmail(ctx,email)
+
+	if err != nil{
+		return police, err
+	}
+
+	return police, nil
 }
