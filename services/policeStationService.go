@@ -2,9 +2,12 @@ package services
 
 import (
 	"context"
+	"errors"
 	"math/rand"
 	"time"
+	"tracy-api/helper"
 	"tracy-api/inputs"
+	"tracy-api/models"
 	"tracy-api/repository"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,6 +17,7 @@ import (
 
 type PoliceStationService interface {
 	Save(ctx context.Context, input inputs.PoliceStationInput, filename string) (*mongo.InsertOneResult, error)
+	Login(ctx context.Context, input inputs.PoliceStationLoginInput) (models.PoliceStation, string, error)
 }
 
 type policeStationService struct{
@@ -48,14 +52,14 @@ func (s *policeStationService) Save(ctx context.Context, input inputs.PoliceStat
 	kode_instansi := string(kode)
 
 	registeredUser := bson.M{
-		"nama_kantor" : input.NamaKantor,
+		"namaKantor" : input.NamaKantor,
 		"username" : input.Username,
 		"email" : input.Email,
 		"password" : string(passwordHash),
 		"telepon" : input.Telepon,
 		"alamat" : input.Alamat,
 		"picture" : filename,
-		"kode_instansi" : kode_instansi,
+		"kodeInstansi" : kode_instansi,
 		"createdAt": time.Now(),
 		"updatedAt" : time.Now(),
 	}
@@ -67,5 +71,27 @@ func (s *policeStationService) Save(ctx context.Context, input inputs.PoliceStat
 	}
 
 	return result, nil
+}
 
+func (s *policeStationService) Login(ctx context.Context, input inputs.PoliceStationLoginInput) (models.PoliceStation, string, error){
+
+	police, err := s.repository.FindByEmail(ctx,input.Email)
+
+	if err != nil{
+		return police, "", errors.New("Email not found")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(police.Password), []byte(input.Password))
+
+	if err != nil{
+		return police, "", errors.New("Wrong Password")
+	}
+
+	token, err := helper.GenerateToken(police.Email)
+
+	if err != nil{
+		return police, "", errors.New("Can't generate token")
+	}
+
+	return police, token, nil
 }

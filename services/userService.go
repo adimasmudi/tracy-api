@@ -2,14 +2,12 @@ package services
 
 import (
 	"context"
-	"os"
 	"time"
 	"tracy-api/helper"
 	"tracy-api/inputs"
 	"tracy-api/models"
 	"tracy-api/repository"
 
-	"github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -54,7 +52,7 @@ func (s *userService) Signup(ctx context.Context, googleUser helper.GoogleUser)(
 			return newUser,"", err
 		}
 
-		token,err := generateToken(googleUser)
+		token,err := helper.GenerateToken(googleUser.Email)
 
 		if err != nil{
 			return newUser, "",err
@@ -70,7 +68,7 @@ func (s *userService) Signup(ctx context.Context, googleUser helper.GoogleUser)(
 		return userFound,"", err
 	}
 
-	token,err := generateToken(googleUser)
+	token,err := helper.GenerateToken(googleUser.Email)
 
 	if err != nil{
 		return userFound, "",err
@@ -108,19 +106,4 @@ func (s *userService) UpdateProfile(ctx context.Context, email string, input inp
 	}
 
 	return user, nil
-}
-
-func generateToken(payload helper.GoogleUser)(string, error){
-	claim := jwt.MapClaims{}
-	claim["email"] = payload.Email
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
-
-	signedToken, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
-
-	if err != nil{
-		return signedToken, err
-	}
-
-	return signedToken, nil
 }

@@ -8,3 +8,8 @@ type PoliceStationInput struct {
 	Alamat     string `json:"alamat" form:"alamat" binding:"required"`
 	Telepon    string `json:"telepon" form:"telepon" binding:"required"`
 }
+
+type PoliceStationLoginInput struct {
+	Email    string `json:"email" form:"email" binding:"required"`
+	Password string `json:"password" form:"password" binding:"required"`
+}

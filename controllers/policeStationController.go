@@ -57,3 +57,29 @@ func (h *policeStationHandler) Register(c *fiber.Ctx) error {
 	c.Status(http.StatusOK).JSON(response)
 	return nil
 }
+
+func (h *policeStationHandler) Login(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var input inputs.PoliceStationLoginInput
+
+	//validate the request body
+	if err := c.BodyParser(&input); err != nil {
+		response := helper.APIResponse("Login Failed", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	logedinUser, token,  err := h.policeStationService.Login(ctx,input)
+
+	if err != nil{
+		response := helper.APIResponse("Login Failed", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	response := helper.APIResponse("Login success", http.StatusOK, "success", &fiber.Map{"police" : logedinUser, "token" : token})
+	c.Status(http.StatusOK).JSON(response)
+	return nil
+}

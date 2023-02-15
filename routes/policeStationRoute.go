@@ -17,4 +17,5 @@ func PoliceStationRoute(api fiber.Router, policeStationCollection *mongo.Collect
 
 	policeAPI := api.Group("/police")
 	policeAPI.Post("/register", policeStationHandler.Register)
+	policeAPI.Post("/login", policeStationHandler.Login)
 }
