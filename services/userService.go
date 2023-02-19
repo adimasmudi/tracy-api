@@ -100,17 +100,18 @@ func (s *userService) UpdateProfile(ctx context.Context, email string, input inp
 		"isdatavalid" : true,
 		"updatedat" : time.Now(),
 	}
-	if input.KodeInstansi != ""{
-		isKodeInstansiExist, err := s.policeRepository.IsKodeInstansiExist(ctx, input.KodeInstansi)
+	
+	isKodeInstansiExist, _ := s.policeRepository.IsKodeInstansiExist(ctx, input.KodeInstansi)
 
-		if isKodeInstansiExist{
-			updateUser["kodeInstansi"] = input.KodeInstansi
-
-		}else{
-			return nil,err
-		}
-		
+	if isKodeInstansiExist{
+		updateUser["ispolice"] = true
+	}else{
+		updateUser["ispolice"] = false
 	}
+
+	updateUser["kodeinstansi"] = input.KodeInstansi
+		
+	
 
 	user, err := s.repository.UpdateProfile(ctx,email, updateUser)
 

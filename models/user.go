@@ -2,7 +2,6 @@ package models
 
 import (
 	"time"
-
 )
 
 type User struct{
@@ -14,6 +13,7 @@ type User struct{
 	DateOfBirth string
 	Picture string
 	IsDataValid bool
+	IsPolice bool
 	Alamat string
 	KodeInstansi string
 	CreatedAt time.Time
