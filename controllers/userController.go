@@ -68,6 +68,17 @@ func (h *userHandler) Callback(c *fiber.Ctx) error {
 		return nil
 	}
 
+	// Create cookie
+	// cookie := new(fiber.Cookie)
+	// cookie.Name = "user"
+	// cookie.Value = user.Email
+	// cookie.Expires = time.Now().Add(24 * time.Hour)
+
+	// fmt.Println(cookie)
+  
+	// // Set cookie
+	// c.Cookie(cookie)
+
 	formatter := formatter.FormatUser(user)
 	responses := helper.APIResponse("Signup User Success", http.StatusOK, "success", &fiber.Map{"user" : formatter, "token" : loginToken})
 	c.Status(http.StatusOK).JSON(responses)
@@ -121,3 +132,7 @@ func (h *userHandler) UpdateProfile(c *fiber.Ctx) error {
 	return nil
 
 }
+
+// func (h *userHandler) Logout(c *fiber.Ctx) error{
+// 	return nil
+// }

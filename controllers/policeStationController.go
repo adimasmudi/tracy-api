@@ -79,6 +79,17 @@ func (h *policeStationHandler) Login(c *fiber.Ctx) error {
 		return nil
 	}
 
+	// Create cookie
+	cookie := new(fiber.Cookie)
+	cookie.Name = "email"
+	cookie.Value = logedinUser.Email
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+
+	fmt.Println(cookie)
+  
+	// // Set cookie
+	c.Cookie(cookie)
+
 	response := helper.APIResponse("Login success", http.StatusOK, "success", &fiber.Map{"police" : logedinUser, "token" : token})
 	c.Status(http.StatusOK).JSON(response)
 	return nil
@@ -99,6 +110,21 @@ func (h *policeStationHandler) GetProfile(c *fiber.Ctx) error {
 	}
 
 	response := helper.APIResponse("get police station data success", http.StatusOK, "success", police)
+	c.Status(http.StatusOK).JSON(response)
+	return nil
+}
+
+func (h *policeStationHandler) Logout(c *fiber.Ctx) error{
+	_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cookie := new(fiber.Cookie)
+	cookie.Name = "email"
+	cookie.Value = ""
+	cookie.Expires = time.Now().Add(-time.Hour * 24)
+	c.Cookie(cookie)
+	
+	response := helper.APIResponse("logout police station success", http.StatusOK, "success", nil)
 	c.Status(http.StatusOK).JSON(response)
 	return nil
 }

@@ -79,7 +79,7 @@ func (s *policeStationService) Login(ctx context.Context, input inputs.PoliceSta
 	police, err := s.repository.FindByEmail(ctx,input.Email)
 
 	if err != nil{
-		return police, "", errors.New("Email not found")
+		return police, "", errors.New("email not found")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(police.Password), []byte(input.Password))

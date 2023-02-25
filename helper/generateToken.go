@@ -9,6 +9,7 @@ import (
 func GenerateToken(email string) (string, error) {
 	claim := jwt.MapClaims{}
 	claim["email"] = email
+	claim["isExpired"] = false 
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 
