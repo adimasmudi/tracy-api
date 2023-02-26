@@ -21,4 +21,9 @@ func PoliceStationRoute(api fiber.Router, policeStationCollection *mongo.Collect
 	policeAPI.Post("/login", policeStationHandler.Login)
 	policeAPI.Get("/profile",middlewares.Auth, policeStationHandler.GetProfile)
 	policeAPI.Post("/logout",middlewares.Auth, policeStationHandler.Logout)
+
+	// for reporting
+	// i need get all police
+
+	// get police by email
 }

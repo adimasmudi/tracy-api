@@ -47,13 +47,13 @@ func Auth(c *fiber.Ctx)error{
 
 	email := claims["email"].(string)
 
-	cookie := c.Cookies("email","") // set default to empty
+	// cookie := c.Cookies("email","") // set default to empty
 
-	if cookie == ""{
-		response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", errors.New("you have to logged in again"))
-		c.Status(http.StatusUnauthorized).JSON(response)
-		return nil
-	}
+	// if cookie == ""{
+	// 	response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", errors.New("you have to logged in again"))
+	// 	c.Status(http.StatusUnauthorized).JSON(response)
+	// 	return nil
+	// }
 	
 	c.Locals("currentUserEmail",email)
 

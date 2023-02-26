@@ -27,12 +27,14 @@ func main(){
 	// collections
 	var userCollection *mongo.Collection = configs.GetCollection(configs.DB, "users")
 	var policeStationCollection *mongo.Collection = configs.GetCollection(configs.DB, "PoliceStations")
+	var reportCollection *mongo.Collection = configs.GetCollection(configs.DB, "reports")
 
 	api := app.Group("/api/v1")
 
 	// routes
 	routes.UserRoute(api, userCollection, policeStationCollection)
 	routes.PoliceStationRoute(api, policeStationCollection)
+	routes.ReportRoute(api,[]*mongo.Collection{reportCollection, userCollection, policeStationCollection})
 
 	app.Get("/",func(c *fiber.Ctx) error {
 		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
