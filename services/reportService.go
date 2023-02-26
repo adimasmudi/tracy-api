@@ -15,6 +15,9 @@ import (
 type ReportService interface {
 	CreateReport(ctx context.Context, email string,  input inputs.CreateReportInput) (*mongo.InsertOneResult, error)
 	GetById(ctx context.Context, id primitive.ObjectID) (interface{}, error)
+	GetAll(ctx context.Context) ([]interface{}, error)
+	GetAllByCurrentUser(ctx context.Context, email string) ([]interface{}, error)
+	UpdateStatus(ctx context.Context, id primitive.ObjectID, input inputs.UpdateStatusReport) (*mongo.UpdateResult, error)
 }
 
 type reportService struct{
@@ -75,4 +78,67 @@ func (s *reportService) GetById(ctx context.Context, id primitive.ObjectID) (int
 	}
 
 	return result, nil
+}
+
+func (s *reportService) GetAll(ctx context.Context) ([]interface{}, error){
+	var result []interface{}
+	allReport, err := s.repository.GetAll(ctx)
+
+	if err != nil{
+		return result, err
+	}
+
+	for _, report := range allReport{
+		user, _ := s.userRepository.FindByEmail(ctx,report.EmailUser)
+		police, _ := s.policeRepository.FindByEmail(ctx, report.EmailPolisi)
+
+		format := make([]interface{},3)
+
+		format[0] = report
+		format[1] = user
+		format[2] = police
+
+		result = append(result, format)
+	}
+
+	return result, nil
+}
+
+func (s *reportService) GetAllByCurrentUser(ctx context.Context, email string) ([]interface{}, error){
+	var result []interface{}
+
+	reportsByCurrentUser, err := s.repository.GetAllCurrentUser(ctx, email)
+
+	if err != nil{
+		return result, err
+	}
+
+	for _, report := range reportsByCurrentUser{
+		user, _ := s.userRepository.FindByEmail(ctx,report.EmailUser)
+		police, _ := s.policeRepository.FindByEmail(ctx, report.EmailPolisi)
+
+		format := make([]interface{},3)
+
+		format[0] = report
+		format[1] = user
+		format[2] = police
+
+		result = append(result, format)
+	}
+
+
+	return result, nil
+}
+
+func (s *reportService) UpdateStatus(ctx context.Context, id primitive.ObjectID, input inputs.UpdateStatusReport) (*mongo.UpdateResult, error){
+
+	newReportStatus := bson.M{"status" : input.Status}
+
+	updatedStatus, err := s.repository.UpdateStatus(ctx, id, newReportStatus)
+
+	if err != nil{
+		return updatedStatus, err
+	}
+
+	return updatedStatus, nil
 }

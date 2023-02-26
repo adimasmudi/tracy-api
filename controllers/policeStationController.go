@@ -79,17 +79,6 @@ func (h *policeStationHandler) Login(c *fiber.Ctx) error {
 		return nil
 	}
 
-	// Create cookie
-	cookie := new(fiber.Cookie)
-	cookie.Name = "email"
-	cookie.Value = logedinUser.Email
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-
-	fmt.Println(cookie)
-  
-	// // Set cookie
-	c.Cookie(cookie)
-
 	response := helper.APIResponse("Login success", http.StatusOK, "success", &fiber.Map{"police" : logedinUser, "token" : token})
 	c.Status(http.StatusOK).JSON(response)
 	return nil

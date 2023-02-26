@@ -22,4 +22,7 @@ func ReportRoute(api fiber.Router, collection []*mongo.Collection){
 	reportAPI := api.Group("/report")
 	reportAPI.Post("/create",middlewares.Auth, reportHandler.CreateReport)
 	reportAPI.Get("/detail/:id", middlewares.Auth, reportHandler.GetDetailReportById)
+	reportAPI.Get("/all", middlewares.Auth, reportHandler.GetAllReport)
+	reportAPI.Get("/current/all", middlewares.Auth, reportHandler.GetAllByCurrentUser)
+	reportAPI.Put("/updateStatus/:id", middlewares.Auth, reportHandler.UpdateStatus)
 }

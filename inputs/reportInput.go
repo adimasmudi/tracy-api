@@ -5,3 +5,7 @@ type CreateReportInput struct {
 	Uraian         string `json:"uraian" binding:"required"`
 	EmailPolisi    string `json:"emailPolisi" binding:"required"`
 }
+
+type UpdateStatusReport struct {
+	Status string `json:"status" binding:"required"`
+}

@@ -69,8 +69,73 @@ func (h *reportHandler) GetDetailReportById(c *fiber.Ctx) error{
 		c.Status(http.StatusBadRequest).JSON(response)
 		return nil
 	}
-
+	
 	response := helper.APIResponse("get report detail data success", http.StatusOK, "success", report)
+	c.Status(http.StatusOK).JSON(response)
+	return nil
+}
+
+func (h *reportHandler) GetAllReport(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	allReport, err := h.reportService.GetAll(ctx)
+
+	if err != nil{
+		response := helper.APIResponse("Failed to get all report data", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+	
+	response := helper.APIResponse("get all report data success", http.StatusOK, "success", allReport)
+	c.Status(http.StatusOK).JSON(response)
+	return nil
+}
+
+func (h *reportHandler) GetAllByCurrentUser(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	currentUserEmail := c.Locals("currentUserEmail").(string)
+
+	reportsByCurrentUser, err := h.reportService.GetAllByCurrentUser(ctx, currentUserEmail)
+
+	if err != nil{
+		response := helper.APIResponse("Failed to get reports data", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	response := helper.APIResponse("get all report data success", http.StatusOK, "success", reportsByCurrentUser)
+	c.Status(http.StatusOK).JSON(response)
+	return nil
+}
+
+func (h *reportHandler) UpdateStatus(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	id := c.Params("id")
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	var input inputs.UpdateStatusReport
+
+	//validate the request body
+	if err := c.BodyParser(&input); err != nil {
+		response := helper.APIResponse("Update Status Failed", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	updatedStatus, err := h.reportService.UpdateStatus(ctx,objectId,input)
+
+	if err != nil{
+		response := helper.APIResponse("Update Status Failed", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	response := helper.APIResponse("Update status report success", http.StatusOK, "success", updatedStatus)
 	c.Status(http.StatusOK).JSON(response)
 	return nil
 }
