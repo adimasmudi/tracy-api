@@ -116,7 +116,7 @@ func (h *reportHandler) UpdateStatus(c *fiber.Ctx) error {
 	defer cancel()
 
 	id := c.Params("id")
-	objectId, err := primitive.ObjectIDFromHex(id)
+	objectId, _ := primitive.ObjectIDFromHex(id)
 
 	var input inputs.UpdateStatusReport
 
