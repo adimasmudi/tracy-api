@@ -52,7 +52,7 @@ func main(){
 	go hub.Run()
 
 	app.Post("/ws/createRoom", wsHandler.CreateRoom)
-	app.Get("/ws/joinRoom/:roomId", wsHandler.JoinRoom)
+	app.Get("/ws/joinRoom/:roomId", ws.JoinRoom(hub))
 
-	app.Listen(":8080")
+	app.Listen(":5000")
 }

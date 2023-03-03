@@ -3,7 +3,7 @@ package ws
 import (
 	"log"
 
-	"github.com/gorilla/websocket"
+	"github.com/gofiber/websocket/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

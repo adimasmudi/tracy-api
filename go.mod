@@ -19,7 +19,7 @@ require (
 	github.com/fasthttp/websocket v1.5.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/gofiber/websocket/v2 v2.1.4 // indirect
+	github.com/gofiber/websocket/v2 v2.1.4 // direct
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect

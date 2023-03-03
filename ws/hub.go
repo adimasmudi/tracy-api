@@ -53,7 +53,10 @@ func (h *Hub) Run() {
 		case m := <-h.Broadcast:
 			if _, ok := h.Rooms[m.RoomID]; ok{
 				for _, cl := range h.Rooms[m.RoomID].Clients{
-					cl.Message <- m
+					if cl.RoomID == m.RoomID{
+						cl.Message <- m
+					}
+					
 				}
 			}
 		}

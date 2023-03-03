@@ -5,7 +5,7 @@ import (
 	"tracy-api/helper"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gorilla/websocket"
+	"github.com/gofiber/websocket/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -42,55 +42,39 @@ func (h *Handler) CreateRoom(c *fiber.Ctx) error {
 	return nil
 }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize: 1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request)bool{
-		return true
-	},
-}
+func JoinRoom(hub *Hub) fiber.Handler{
+	return websocket.New(func(c *websocket.Conn){
+		
+		roomId := c.Params("roomId")
+		senderEmail := c.Query("senderEmail")
+		receiverEmail := c.Query("receiverEmail")
 
-func (h *Handler) JoinRoom(c *fiber.Ctx) error{
-	var w http.ResponseWriter
-	var r *http.Request
+		cl := &Client{
+			Conn : c,
+			Message : make(chan *Message, 10),
+			RoomID : roomId,
+			SenderEmail: senderEmail,
+			ReceriverEmail: receiverEmail,
+		}
+
+		m := &Message{
+			Content : "A new Request Chat",
+			RoomID: roomId,
+			SenderEmail: senderEmail,
+			ReceriverEmail: receiverEmail,
+		}
+
+		// register a new client through register channel
+		hub.Register <- cl
 
 
-	conn, err := upgrader.Upgrade(w, r, nil)
-	
-	if err != nil{
-		response := helper.APIResponse("Failed to join chat", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
-		c.Status(http.StatusBadRequest).JSON(response)
-		return nil
-	}
+		// broadcast that message
+		hub.Broadcast <- m
 
-	roomId := c.Params("roomId")
-	senderEmail := c.Query("senderEmail")
-	receiverEmail := c.Query("receiverEmail")
+		go cl.writeMessage()
+		cl.readMessage(hub)
 
-	cl := &Client{
-		Conn : conn,
-		Message : make(chan *Message, 10),
-		RoomID : roomId,
-		SenderEmail: senderEmail,
-		ReceriverEmail: receiverEmail,
-	}
+	})
 
-	m := &Message{
-		Content : "A new Request Chat",
-		RoomID: roomId,
-		SenderEmail: senderEmail,
-		ReceriverEmail: receiverEmail,
-	}
-
-	// register a new client through register channel
-	h.hub.Register <- cl
-
-	// broadcast that message
-	h.hub.Broadcast <- m
-
-	go cl.writeMessage()
-	cl.readMessage(h.hub)
-
-	return nil
 
 }
