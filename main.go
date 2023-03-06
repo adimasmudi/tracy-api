@@ -56,5 +56,5 @@ func main(){
 	app.Post("/ws/createRoom", wsHandler.CreateRoom)
 	app.Get("/ws/joinRoom/:roomId", ws.JoinRoom(hub))
 
-	app.Listen(":5000")
+	app.Listen(":80")
 }
