@@ -8,7 +8,7 @@ jobs:
     name: Build and Push to GCP
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: tracy
+      IMAGE_NAME: tracy-api
       PROJECT_ID: tracy-379209
     steps:
       - name: Checkout
