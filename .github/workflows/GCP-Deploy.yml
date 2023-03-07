@@ -1,24 +1,24 @@
-name: Docker
+name: Build and Push Docker Image to GCP
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
   deploy:
-    name: Setup Gcloud Account
+    name: Build and Push to GCP
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+      IMAGE_NAME: tracy
+      PROJECT_ID: tracy-379209
     steps:
       - name: Login
         uses: google-github-actions/setup-gcloud@v0
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          project_id: $PROJECT_ID
           service_account_email: ${{ secrets.GCP_EMAIL }}
           service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+          export_default_credentials: true
 
       - name: Configure Docker
         run: gcloud auth configure-docker --quiet
@@ -27,10 +27,18 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Docker image
-        run: docker build --platform linux/amd64 -t $IMAGE_NAME .
+        run: docker build -t $IMAGE_NAME:latest .
 
-      - name: Push Docker image
-        run: docker push $IMAGE_NAME
+      - name: Automatic Tagging of Releases
+        id: increment-git-tag
+        run: |
+          bash ./scripts/git_update.sh -v major
 
-      - name: Deploy Docker image
-        run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image $IMAGE_NAME --region us-central1
+      - name: Push Docker image to container registry
+        env:
+          GIT_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
+        run: |-
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG

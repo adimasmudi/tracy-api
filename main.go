@@ -1,7 +1,10 @@
 package main
 
 import (
+	"os"
 	"tracy-api/configs"
+	"tracy-api/ws"
+
 	// "tracy-api/ws"
 
 	"tracy-api/routes"
@@ -48,18 +51,18 @@ func main(){
 		</html>`)
 	})
 
-	// hub := ws.NewHub()
-	// wsHandler := ws.NewHandler(hub)
+	hub := ws.NewHub()
+	wsHandler := ws.NewHandler(hub)
 
-	// go hub.Run()
+	go hub.Run()
 
-	// app.Post("/ws/createRoom", wsHandler.CreateRoom)
-	// app.Get("/ws/joinRoom/:roomId", ws.JoinRoom(hub))
+	app.Post("/ws/createRoom", wsHandler.CreateRoom)
+	app.Get("/ws/joinRoom/:roomId", ws.JoinRoom(hub))
 
-	// port := os.Getenv("PORT")
-	// if port == "" {
-	// 	port = "80"
-	// }
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
-	app.Listen(":8888")
+	app.Listen(":8080")
 }
