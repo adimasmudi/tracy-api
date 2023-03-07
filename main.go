@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"tracy-api/configs"
 	"tracy-api/ws"
 
@@ -56,5 +57,10 @@ func main(){
 	app.Post("/ws/createRoom", wsHandler.CreateRoom)
 	app.Get("/ws/joinRoom/:roomId", ws.JoinRoom(hub))
 
-	app.Listen(":80")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	app.Listen(port)
 }
