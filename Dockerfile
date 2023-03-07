@@ -1,4 +1,4 @@
-FROM golang:1.19.5-alpine
+FROM golang:alpine
 ENV CGO_ENABLED=0
 
 WORKDIR /app
@@ -8,4 +8,4 @@ RUN go mod download
 
 RUN go build -o main .
 
-CMD ["./main"]
+CMD [ "./main" ]
