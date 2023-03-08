@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"tracy-api/configs"
 	"tracy-api/ws"
@@ -63,6 +64,8 @@ func main(){
 	if port == "" {
 		port = "8080"
 	}
+
+	fmt.Println(port)
 
 	app.Listen(":8080")
 }
