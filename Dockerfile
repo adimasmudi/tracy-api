@@ -8,6 +8,5 @@ RUN go mod download
 COPY . .
 
 RUN go build -o ./out/dist .
-EXPOSE 8888
 
-CMD ./out/dist .
+CMD ./out/dist
