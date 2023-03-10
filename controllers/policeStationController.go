@@ -117,3 +117,39 @@ func (h *policeStationHandler) Logout(c *fiber.Ctx) error{
 	c.Status(http.StatusOK).JSON(response)
 	return nil
 }
+
+func (h *policeStationHandler) GetPoliceByEmail(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	policeEmail := c.Params("email")
+
+	police, err := h.policeStationService.GetProfile(ctx, policeEmail)
+
+	if err != nil{
+		response := helper.APIResponse("Can't get police station data", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	response := helper.APIResponse("get police station data by email success", http.StatusOK, "success", police)
+	c.Status(http.StatusOK).JSON(response)
+	return nil
+}
+
+func (h *policeStationHandler) GetAllPoliceStation(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	polices, err := h.policeStationService.GetAllPoliceStation(ctx)
+
+	if err != nil{
+		response := helper.APIResponse("Can't get all police station data", http.StatusBadRequest, "error", &fiber.Map{"error" : err})
+		c.Status(http.StatusBadRequest).JSON(response)
+		return nil
+	}
+
+	response := helper.APIResponse("get police station data success", http.StatusOK, "success", polices)
+	c.Status(http.StatusOK).JSON(response)
+	return nil
+}

@@ -1,0 +1,5 @@
+gcloud auth login
+docker rmi --force app:latest
+docker build -t app:latest . --no-cache
+docker tag app gcr.io/tracy-379209/app
+docker push gcr.io/tracy-379209/app

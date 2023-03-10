@@ -67,5 +67,5 @@ func main(){
 
 	fmt.Println(port)
 
-	app.Listen(":8080")
+	app.Listen(":"+port)
 }

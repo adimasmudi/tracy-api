@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"tracy-api/models"
 
@@ -16,6 +17,7 @@ type PoliceStationRepository interface {
 	FindByEmail(ctx context.Context, email string) (models.PoliceStation,  error)
 	IsPoliceStationExist(ctx context.Context, email string, username string) (bool, error)
 	IsKodeInstansiExist(ctx context.Context, kodeInstansi string) (bool, error)
+	GetAllPoliceStation(ctx context.Context) ([]models.PoliceStation, error)
 }
 
 type policeStationRepository struct{
@@ -81,14 +83,28 @@ func (r *policeStationRepository) IsKodeInstansiExist(ctx context.Context, kodeI
 	return true, errors.New("user exist")
 }
 
-// func (r *policeStationRepository) AddPolice(ctx context.Context, email string) (*mongo.UpdateResult, error){
-	
+func (r *policeStationRepository) GetAllPoliceStation(ctx context.Context) ([]models.PoliceStation, error){
+	var results []models.PoliceStation
 
-// 	result, err := r.DB.InsertOne(ctx, policeStation)
+	cur, err := r.DB.Find(ctx,bson.D{{}})
 
-// 	if err != nil{
-// 		return result, err
-// 	}
+	if err != nil{
+		return results, err
+	}
 
-// 	return result, nil
-// }
+	if err = cur.All(ctx, &results); err != nil{
+		return results, err
+	}
+
+	for _, result := range results{
+		cur.Decode(&result)
+
+		_, err := json.MarshalIndent(result, "", "    ")
+
+		if err != nil{
+			return results, err
+		}
+	}
+
+	return results, nil
+}
