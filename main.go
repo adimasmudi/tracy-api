@@ -42,6 +42,7 @@ func main(){
 	routes.PoliceStationRoute(api, policeStationCollection)
 	routes.ReportRoute(api,[]*mongo.Collection{reportCollection, userCollection, policeStationCollection})
 	routes.LokasiRoute(api,lokasiCollection)
+	routes.MapsRoute(api, policeStationCollection)
 
 	app.Get("/",func(c *fiber.Ctx) error {
 		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
