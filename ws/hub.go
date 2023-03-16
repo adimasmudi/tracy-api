@@ -1,10 +1,8 @@
 package ws
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
-
 type Room struct {
 	ID      string             `json:"id"`
-	Clients map[primitive.ObjectID]*Client `json:"client"`
+	Clients map[string]*Client `json:"client"`
 }
 
 type Hub struct {

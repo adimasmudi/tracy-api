@@ -4,16 +4,15 @@ import (
 	"log"
 
 	"github.com/gofiber/websocket/v2"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Client struct {
 	Conn           *websocket.Conn
 	Message        chan *Message
-	ID             primitive.ObjectID `json:"id" bson:"_id"`
+	ID             string `json:"id" bson:"_id"`
 	RoomID         string             `json:"roomId"`
 	SenderEmail    string             `json:"senderEmail"`
-	ReceriverEmail string             `json:"receriverEmail"`
+	ReceriverEmail string             `json:"receiverEmail"`
 }
 
 type Message struct {

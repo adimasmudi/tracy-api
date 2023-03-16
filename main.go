@@ -60,6 +60,8 @@ func main(){
 
 	app.Post("/ws/createRoom", wsHandler.CreateRoom)
 	app.Get("/ws/joinRoom/:roomId", ws.JoinRoom(hub))
+	app.Get("/ws/getRooms",wsHandler.GetRooms)
+	app.Get("/ws/getClients/:roomId", wsHandler.GetClients)
 
 	port := os.Getenv("PORT")
 	if port == "" {

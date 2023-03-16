@@ -6,7 +6,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Handler struct {
@@ -34,7 +33,7 @@ func (h *Handler) CreateRoom(c *fiber.Ctx) error {
 
 	h.hub.Rooms[req.ID] = &Room{
 		ID : req.ID,
-		Clients : make(map[primitive.ObjectID]*Client),
+		Clients : make(map[string]*Client),
 	}
 
 	response := helper.APIResponse("success to request chat", http.StatusOK, "success", req)
@@ -73,8 +72,55 @@ func JoinRoom(hub *Hub) fiber.Handler{
 
 		go cl.writeMessage()
 		cl.readMessage(hub)
-
 	})
 
+}
 
+type RoomRes struct{
+	ID string `json:"id"`
+}
+
+func (h *Handler) GetRooms(c *fiber.Ctx)error{
+	rooms := make([]RoomRes, 0)
+
+	for _, r := range(h.hub.Rooms){
+		rooms = append(rooms, RoomRes{
+			ID : r.ID,
+		})
+	}
+
+	response := helper.APIResponse("success get rooms", http.StatusOK, "success", rooms)
+	c.Status(http.StatusOK).JSON(response)
+	return nil
+}
+
+type ClientRes struct{
+	ID string `json:"id" bson:"_id"`
+	SenderEmail string `json:"senderEmail"`
+	ReceiverEmail string `json:"receiverEmail"`
+}
+
+func (h *Handler) GetClients(c *fiber.Ctx) error{
+	var clients []ClientRes
+
+	roomId := c.Params("roomId")
+
+	if _, ok := h.hub.Rooms[roomId]; !ok{
+		clients = make([]ClientRes, 0)
+		response := helper.APIResponse("success get clients in room here", http.StatusOK, "success", clients)
+		c.Status(http.StatusOK).JSON(response)
+		return nil
+	}
+
+	for _, c := range(h.hub.Rooms[roomId].Clients){
+		clients = append(clients, ClientRes{
+			ID : c.ID,
+			SenderEmail : c.SenderEmail,
+			ReceiverEmail : c.ReceriverEmail,
+		})
+	}
+
+	response := helper.APIResponse("success get clients in room", http.StatusOK, "success", clients)
+	c.Status(http.StatusOK).JSON(response)
+	return nil
 }
