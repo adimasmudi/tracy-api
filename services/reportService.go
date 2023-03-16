@@ -38,7 +38,8 @@ func (s *reportService) CreateReport(ctx context.Context, email string, input in
 		"emailUser" : email,
 		"emailPolisi" : input.EmailPolisi,
 		"status" : "terkirim",
-		"reportedAt" : time.Now(),
+		"createdAt" : time.Now(),
+		"updatedAt" : time.Now(),
 	}
 
 	result, err := s.repository.Save(ctx, report)
@@ -132,7 +133,10 @@ func (s *reportService) GetAllByCurrentUser(ctx context.Context, email string) (
 
 func (s *reportService) UpdateStatus(ctx context.Context, id primitive.ObjectID, input inputs.UpdateStatusReport) (*mongo.UpdateResult, error){
 
-	newReportStatus := bson.M{"status" : input.Status}
+	newReportStatus := bson.M{
+		"status" : input.Status,
+		"updatedAt" : time.Now(),
+	}
 
 	updatedStatus, err := s.repository.UpdateStatus(ctx, id, newReportStatus)
 

@@ -11,7 +11,8 @@ type ReportFormatter struct {
 	user      interface{}    
 	polisi    interface{} 
 	status         string    
-	reportedAt     time.Time
+	createdAt     time.Time
+	updatedAt time.Time
 }
 
 func FormatReport(report models.Report, user models.User, police models.PoliceStation) interface{} {
@@ -21,7 +22,8 @@ func FormatReport(report models.Report, user models.User, police models.PoliceSt
 		user : user,
 		polisi : police,
 		status : report.Status,
-		reportedAt : report.ReportedAt,
+		createdAt : report.CreatedAt,
+		updatedAt : report.UpdatedAt,
 	}
 
 	return formatter

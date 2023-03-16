@@ -13,5 +13,6 @@ type Report struct {
 	EmailUser      string    `json:"user"`
 	EmailPolisi    string    `json:"polisi"`
 	Status         string    `json:"status"`
-	ReportedAt     time.Time `json:"reportedAt"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
