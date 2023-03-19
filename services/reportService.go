@@ -24,10 +24,11 @@ type reportService struct{
 	repository repository.ReportRepository
 	userRepository repository.UserRepository
 	policeRepository repository.PoliceStationRepository
+	lokasiRepository repository.LokasiRepository
 }
 
-func NewReportService(repository repository.ReportRepository, userRepository repository.UserRepository, policeRepository repository.PoliceStationRepository) *reportService{
-	return &reportService{repository, userRepository, policeRepository}
+func NewReportService(repository repository.ReportRepository, userRepository repository.UserRepository, policeRepository repository.PoliceStationRepository, lokasiRepository repository.LokasiRepository) *reportService{
+	return &reportService{repository, userRepository, policeRepository, lokasiRepository}
 }
 
 func (s *reportService) CreateReport(ctx context.Context, email string, input inputs.CreateReportInput) (*mongo.InsertOneResult, error) {
@@ -72,10 +73,17 @@ func (s *reportService) GetById(ctx context.Context, id primitive.ObjectID) (int
 		return report, err
 	}
 
+	lokasi, err := s.lokasiRepository.GetByReportId(ctx, report.Id)
+
+	if err != nil{
+		return report, err
+	}
+
 	result := bson.M{
 		"report" : report,
 		"user" : user,
 		"police" : police,
+		"lokasi" : lokasi,
 	}
 
 	return result, nil
@@ -92,12 +100,14 @@ func (s *reportService) GetAll(ctx context.Context) ([]interface{}, error){
 	for _, report := range allReport{
 		user, _ := s.userRepository.FindByEmail(ctx,report.EmailUser)
 		police, _ := s.policeRepository.FindByEmail(ctx, report.EmailPolisi)
+		lokasi, _ := s.lokasiRepository.GetByReportId(ctx, report.Id)
 
-		format := make([]interface{},3)
+		format := make([]interface{},4)
 
 		format[0] = report
 		format[1] = user
 		format[2] = police
+		format[3] = lokasi
 
 		result = append(result, format)
 	}
@@ -117,12 +127,14 @@ func (s *reportService) GetAllByCurrentUser(ctx context.Context, email string) (
 	for _, report := range reportsByCurrentUser{
 		user, _ := s.userRepository.FindByEmail(ctx,report.EmailUser)
 		police, _ := s.policeRepository.FindByEmail(ctx, report.EmailPolisi)
+		lokasi, _ := s.lokasiRepository.GetByReportId(ctx, report.Id)
 
 		format := make([]interface{},3)
 
 		format[0] = report
 		format[1] = user
 		format[2] = police
+		format[3] = lokasi
 
 		result = append(result, format)
 	}

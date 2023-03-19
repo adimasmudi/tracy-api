@@ -15,8 +15,9 @@ func ReportRoute(api fiber.Router, collection []*mongo.Collection){
 	reportRepository := repository.NewReportRepository(collection[0])
 	userRepository := repository.NewUserRepository(collection[1])
 	policeStationRepository := repository.NewPoliceStationRepository(collection[2])
+	lokasiRepository := repository.NewLokasiRepository(collection[3])
 
-	reportService := services.NewReportService(reportRepository, userRepository, policeStationRepository)
+	reportService := services.NewReportService(reportRepository, userRepository, policeStationRepository, lokasiRepository)
 	reportHandler := controllers.NewReportHandler(reportService)
 
 	reportAPI := api.Group("/report")

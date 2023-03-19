@@ -40,7 +40,7 @@ func main(){
 	// routes
 	routes.UserRoute(api, userCollection, policeStationCollection)
 	routes.PoliceStationRoute(api, policeStationCollection)
-	routes.ReportRoute(api,[]*mongo.Collection{reportCollection, userCollection, policeStationCollection})
+	routes.ReportRoute(api,[]*mongo.Collection{reportCollection, userCollection, policeStationCollection, lokasiCollection})
 	routes.LokasiRoute(api,lokasiCollection)
 	routes.MapsRoute(api, policeStationCollection)
 
