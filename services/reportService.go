@@ -129,7 +129,7 @@ func (s *reportService) GetAllByCurrentUser(ctx context.Context, email string) (
 		police, _ := s.policeRepository.FindByEmail(ctx, report.EmailPolisi)
 		lokasi, _ := s.lokasiRepository.GetByReportId(ctx, report.Id)
 
-		format := make([]interface{},3)
+		format := make([]interface{},4)
 
 		format[0] = report
 		format[1] = user
