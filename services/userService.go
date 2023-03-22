@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"time"
 	"tracy-api/helper"
 	"tracy-api/inputs"
@@ -10,11 +11,14 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 
 type UserService interface {
 	Signup(ctx context.Context, googleUser helper.GoogleUser) (models.User, string,error)
+	Register(ctx context.Context, input inputs.RegisterUserInput) (*mongo.InsertOneResult,error)
+	Login(ctx context.Context, input inputs.LoginUserInput) (models.User, string, error)
 	GetProfile(ctx context.Context, email string) (models.User, error)
 	UpdateProfile(ctx context.Context, email string, input inputs.UpdateUserInput) (*mongo.UpdateResult, error)
 }
@@ -76,6 +80,66 @@ func (s *userService) Signup(ctx context.Context, googleUser helper.GoogleUser)(
 	}
 
 	return userFound, token, nil
+}
+
+func (s *userService) Register(ctx context.Context, input inputs.RegisterUserInput) (*mongo.InsertOneResult, error){
+	
+	userExist, _ := s.repository.IsUserExist(ctx,input.Email )
+
+	if userExist{
+		return nil, errors.New("User already exist")
+	}
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.MinCost)
+
+	if err != nil{
+		return nil, err
+	}
+
+
+	newUser := models.User{
+		Username : input.Username,
+		NamaLengkap : input.NamaLengkap,
+		Email : input.Email,
+		Password : string(passwordHash),
+		NoHp : input.NoHp,
+		DateOfBirth : input.DateOfBirth,
+		IsDataValid: true,
+		Alamat : input.Alamat,
+		CreatedAt: time.Now(),
+		UpdatedAt : time.Now(),
+	}
+
+	registeredUser, err := s.repository.Save(ctx,newUser)
+
+	if err != nil{
+		return nil, err
+	}
+
+	return registeredUser, nil
+}
+
+func (s *userService) Login(ctx context.Context, input inputs.LoginUserInput) (models.User, string, error){
+
+	user, err := s.repository.FindByEmail(ctx,input.Email)
+
+	if err != nil{
+		return user, "", errors.New("email not found")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+
+	if err != nil{
+		return user, "", errors.New("wrong Password")
+	}
+
+	token, err := helper.GenerateToken(user.Email)
+
+	if err != nil{
+		return user, "", errors.New("can't generate token")
+	}
+
+	return user, token, nil
 }
 
 func (s *userService) GetProfile(ctx context.Context, email string) (models.User, error){

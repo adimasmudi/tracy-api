@@ -35,7 +35,8 @@ func UserRoute(api fiber.Router, userCollection *mongo.Collection, policeStation
 	})
 
 	authUser.Get("/callback",userHandler.Callback)
-
+	authUser.Post("/register", userHandler.Register)
+	authUser.Post("/login", userHandler.Login)
 	authUser.Get("/profile",middlewares.Auth,userHandler.GetProfile)
 	authUser.Put("/profile",middlewares.Auth,userHandler.UpdateProfile)
 
